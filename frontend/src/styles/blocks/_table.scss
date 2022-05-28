@@ -1,0 +1,20 @@
+.table {
+  border-collapse: collapse;
+
+  &__header {
+    color: $silver;
+    font-weight: 300;
+  }
+
+  &__row {
+    cursor: pointer;
+    border-bottom: 2px solid $athensGrayDark;
+
+    &:hover {
+      background-color: $athensGrayDark;
+    }
+  }
+}
+
+
+
