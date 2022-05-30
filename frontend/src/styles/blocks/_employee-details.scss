@@ -1,0 +1,29 @@
+.app__container {
+    &__details {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        margin: auto;
+        max-width: 500px;
+    }
+    &__list {
+        list-style-type: none;
+        color:$silver;
+        span {
+            color: $black;
+        }
+    }
+    
+}
+
+.btn-back {
+    display: flex;
+    justify-content: flex-end;
+    text-decoration: none;
+    color:$silver;
+
+    &:hover {
+        color:$dodgerBlueLight;
+    }
+    
+}

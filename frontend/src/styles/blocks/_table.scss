@@ -1,14 +1,29 @@
+.table__container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  max-width: 900px;
+  margin: auto;
+}
+
+
 .table {
   border-collapse: collapse;
-
   &__header {
     color: $silver;
     font-weight: 300;
+    th {
+      padding: 10px;
+      border-bottom: 2px solid $athensGrayDark;
+    }
   }
 
   &__row {
     cursor: pointer;
     border-bottom: 2px solid $athensGrayDark;
+    td {
+      padding: 10px;
+    }
 
     &:hover {
       background-color: $athensGrayDark;

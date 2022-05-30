@@ -1,43 +1,37 @@
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-export const useFetch = (url) => {
-  const [data, setData] = useState(null)
-  const [isPending, setIsPending] = useState(false)
-  const [error, setError] = useState(null)
+export const useFetch = (urlEmployee, urlContracts) => {
+    const [employe, setEmployees] = useState([])
+    const [contract, setContract] = useState([])
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+  
+    useEffect(() => {
 
-  useEffect(() => {
-    const controller = new AbortController()
-
-    const fetchData = async () => {
-      setIsPending(true)
+        const fetchData = async () => {
       
-      try {
-        const res = await fetch(url, { signal: controller.signal })
-        if(!res.ok) {
-          throw new Error(res.statusText)
+        // const employeeUrl = 'http://localhost:8080/employees'
+        // const contractUrl = 'http://localhost:8080/contracts'
+      
+        const getEmployeeUrl = await axios.get(urlEmployee)
+        const getContractsUrl = await axios.get(urlContracts)
+      
+          axios.all([getEmployeeUrl, getContractsUrl]).then(
+            axios.spread((...allData) => {
+              setEmployees(allData[0].data)
+              setContract(allData[1].data)
+              setTimeout(() =>  setIsLoading(false), 1100);
+      
+            })
+          ).catch(() => {
+        setErrorMessage("Unable to fetch data");
+        setIsLoading(false);
+         });
+          
         }
-        const data = await res.json()
-
-        setIsPending(false)
-        setData(data)
-        setError(null)
-      } catch (err) {
-        if (err.name === "AbortError") {
-          console.log("Pobranie nieudane")
-        } else {
-          setIsPending(false)
-          setError('Nie mozna pobrac danych.')
-        }
-      }
-    }
-
-    fetchData()
-
-    return () => {
-      controller.abort()
-    }
-
-  }, [url])
-
-  return { data, isPending, error }
-}
+          fetchData()
+        }, [urlEmployee, urlContracts])
+  
+    return {employe, contract,isLoading, errorMessage };
+  };

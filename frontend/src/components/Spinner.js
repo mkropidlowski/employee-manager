@@ -1,4 +1,7 @@
-const Spinner = () => <div className={'spinner'}/>;
+import React from 'react'
 
-
-export default {Spinner}
+export default function Spinner() {
+  return (
+    <div className={'spinner'}></div>
+  )
+}

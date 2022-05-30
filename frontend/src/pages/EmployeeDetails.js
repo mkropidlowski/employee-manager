@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import { Link, useParams } from "react-router-dom";
+import Spinner from "../components/Spinner";
+import { dateConverter } from "../components/DateParser";
 
 const EmployeeDetails = () => {
 
@@ -8,8 +10,8 @@ const EmployeeDetails = () => {
 
   const [employees, setEmployees] = useState()
   const [contracts, setContract] = useState()
+  const [errorMessage, setErrorMessage] = useState("");
 
-  
   useEffect(() => {
 
     const fetchData = async () => {
@@ -26,7 +28,9 @@ const EmployeeDetails = () => {
           setContract(allData[1].data)
   
         })
-      )
+      ).catch(() => {
+        setErrorMessage("Unable to fetch data");
+     });
       
     }
       fetchData()
@@ -35,31 +39,28 @@ const EmployeeDetails = () => {
 
   return (
     <div className={'app__container'}>
-   
-      {!employees && <span>Loading data...</span> } 
-    
-      {employees && <div>
 
-      {employees.filter(employeeDetails => employeeDetails.id == id).map(filteredEmployee => {
-        
+      {errorMessage && <div className="error">{errorMessage}</div>}
+      {!employees && <Spinner />} 
+
+      {employees && <div className="app__container__details">
+
+      {employees.filter(employeeDetails => employeeDetails.id == id).map(filteredEmployee => {  
          const data = contracts.find(cont => cont.employeeId === filteredEmployee.id)
           return (
-            <ul key={filteredEmployee.id}>
-              <li>Name: {filteredEmployee.name}</li>
-              <li>Position: {filteredEmployee.position}</li>
-              <li>Date of Birth: {new Date(filteredEmployee.dateOfBirth).toLocaleDateString()}</li>
-              <li>Salary: {data.salary}</li>
-              <li>Currency: {data.salaryCurrency}</li>
-            </ul>
-            
+            <ul key={filteredEmployee.id} className="app__container__list">
+              <li>Name: <span>{filteredEmployee.name}</span></li>
+              <li>Position: <span>{filteredEmployee.position}</span></li>
+              <li>Date of Birth: <span>{dateConverter(filteredEmployee.dateOfBirth)}</span></li>
+              <li>Salary: <span>{data.salary}</span></li>
+              <li>Currency: <span>{data.salaryCurrency}</span></li>
+            </ul>  
           )
           })
-
         }
-
-    
+      <Link to="/" className="btn-back">Back to list</Link>
       </div> }
-      <Link to="/">Back to list</Link>
+     
     </div>
 )
 }

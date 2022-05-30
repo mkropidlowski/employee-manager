@@ -1,79 +1,90 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
-// import { Employees } from "../pages/Employees";
-import { useNavigate } from "react-router-dom";
+import { Employees } from "../pages/Employees";
+import { Pagination } from "../components/Pagination";
+import Spinner from "./Spinner";
 
 const Table = () => {
 
+  // records state
+  const [employees, setEmployees] = useState([])
+  const [contracts, setContract] = useState([])
+
+  // spinnner/error state
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  // paginaton state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage] = useState(5); 
+   // pagination stuff
+  const indexOfLast = currentPage * recordsPerPage;
+  const indexOfFirst = indexOfLast - recordsPerPage;
+  const currentData = employees.slice(indexOfFirst, indexOfLast);
+  const paginate = pageNumber => setCurrentPage(pageNumber);
+
   
-  const navigate = useNavigate()
-  const [employees, setEmployees] = useState()
-  const [contracts, setContract] = useState()
 
-  useEffect(() => {
 
-  const fetchData = async () => {
+    useEffect(() => {
 
-  const employeeUrl = 'http://localhost:8080/employees'
-  const contractUrl = 'http://localhost:8080/contracts'
-
-  const getEmployeeUrl = await axios.get(employeeUrl)
-  const getContractsUrl = await axios.get(contractUrl)
-
-    axios.all([getEmployeeUrl, getContractsUrl]).then(
-      axios.spread((...allData) => {
-        setEmployees(allData[0].data)
-        setContract(allData[1].data)
-
-      })
-    )
+    const fetchData = async () => {
+      setIsLoading(true)
     
-  }
-    fetchData()
-  }, [])
+    const employeeUrl = 'http://localhost:8080/employees'
+    const contractUrl = 'http://localhost:8080/contracts'
 
-// navigate to employeeDetails
-  function handleClick(e) {
-    const userID = e.target.parentElement.getAttribute("data-id")
-    navigate(`/employeeDetails/${userID}`);
-  }
+    const getEmployeeUrl = await axios.get(employeeUrl)
+    const getContractsUrl = await axios.get(contractUrl)
+
+      axios.all([getEmployeeUrl, getContractsUrl]).then(
+        axios.spread((...allData) => {
+          setEmployees(allData[0].data)
+          setContract(allData[1].data)
+          setTimeout(() =>  setIsLoading(false), 1100);
+
+        })
+      ).catch(() => {
+        setErrorMessage("Unable to fetch data");
+        setIsLoading(false);
+    });
+      
+    }
+      fetchData()
+    }, [])
+
 
   return (
     <>
-    {!employees && <span>Loading data...</span> } 
-    
+    {errorMessage && <div className="error">{errorMessage}</div>}
+    {isLoading ? <Spinner /> : <div className="table__container">
       <table className="table">
       <thead>
-        <tr>
-          <td>Name</td>
-          <td>Position</td>
-          <td>Date</td>
-          <td>Salary</td>
-          <td>Contract</td>
+        <tr className="table__header">
+          <th>Name</th>
+          <th>Position</th>
+          <th>Date</th>
+          <th>Salary</th>
+          <th>Contract</th>
         </tr>
       </thead>
-
-      {employees && <tbody>
-      {employees.map(employeesList => {
-      const data = contracts.find(cont => cont.employeeId === employeesList.id)
-     
-      return (
-        <tr onClick={handleClick} key={employeesList.id} data-id={employeesList.id}>
-          <td>{employeesList.name}</td>
-          <td>{employeesList.position}</td>
-          <td>{new Date(employeesList.dateOfBirth).toLocaleDateString()}</td>
-          <td>{data.salary}</td>
-          <td>{new Date(data.contractValidUntil).toLocaleDateString()}</td>
-        </tr>
-      )
- 
-      })}
-      </tbody>
-      }    
-    </table>
-    
+      <Employees employeeRecords={currentData} contractsRecords={contracts}/> 
+      </table>
+      <div>
+        <Pagination
+            recordsPerPage={recordsPerPage}
+            totalRecords={employees.length}
+            paginate={paginate}
+          />
+      </div>
+    </div>
+    }
     </>
   )
 }
 
 export { Table };
+
+
+
+

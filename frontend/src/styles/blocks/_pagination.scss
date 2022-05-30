@@ -1,0 +1,26 @@
+.pagination {
+    color: $silver;
+    position: relative;
+    left: 280px;
+
+    &__list {
+        display: inline-flex;
+        margin-left: -20px;
+    }
+
+    &__list--item {
+        list-style-type: none;
+    }
+
+    &__list--link {
+        text-decoration: none;
+        color: $silver;
+        margin-left: 5px;
+    }
+
+    &__list--link:hover {
+        color: $dodgerBlueLight;
+    }
+
+    
+}
