@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+// Skrypt, który miał posłużyć jako reużywalny do pobierania danych z endpointa.
+// W plikach Employees i Table jest on powielony, najpierw zabrałem się za stworzenie 
+// pobierania danych a potem dopiero ten skrypt przez to podczas próby implemenacji 
+// zaczęło mi sypać trochę błędów więc wróciłem do poprzedniego rozwiązania ze względu na wyrobienie się na czas z zadaniem, natomiast poniższa opcja 
+// wyrzucała błędy związanie z tablicami więc pewnie albo któryś state ma złą wartość albo odbiór danych przerabia tablice na obiekt przez co 
+// przy dalszych funkcjach miałem błędy.
+
+
 export const useFetch = (urlEmployee, urlContracts) => {
     const [employe, setEmployees] = useState([])
     const [contract, setContract] = useState([])
